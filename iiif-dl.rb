@@ -25,8 +25,8 @@ iiif_manifest['sequences'].each do |sequence|
       $stderr.puts "#{image['resource']['width']} x #{image['resource']['height']}"
       width = image['resource']['width'].to_i
       height = image['resource']['height'].to_i
-      x_tiles = (width / (MAX_TILE_WIDTH + 1).to_f).ceil
-      y_tiles = (height / (MAX_TILE_HEIGHT + 1).to_f).ceil
+      x_tiles = (width / MAX_TILE_WIDTH.to_f).ceil
+      y_tiles = (height / MAX_TILE_HEIGHT.to_f).ceil
       $stderr.puts "#{x_tiles} x #{y_tiles} tiles"
       final_filename = "#{metadata_prefix} #{current_sequence} #{canvas['label']} #{current_image}.jpg".tr(' ','_')
       $stderr.puts "Downloading and assembling #{final_filename}"
@@ -34,8 +34,8 @@ iiif_manifest['sequences'].each do |sequence|
       filenames = []
       for y in 0..(y_tiles - 1)
         for x in 0..(x_tiles - 1)
-          x_offset = (MAX_TILE_WIDTH + 1) * x
-          y_offset = (MAX_TILE_HEIGHT + 1) * y
+          x_offset = MAX_TILE_WIDTH * x
+          y_offset = MAX_TILE_HEIGHT * y
           x_width = (x_offset + MAX_TILE_WIDTH) > width ? width - x_offset : MAX_TILE_WIDTH
           y_width = (y_offset + MAX_TILE_HEIGHT) > height ? height - y_offset : MAX_TILE_HEIGHT
           filename = "#{tile}.jpg"
