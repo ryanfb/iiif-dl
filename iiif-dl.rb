@@ -7,7 +7,14 @@ MAX_TILE_WIDTH = 1000
 MAX_TILE_HEIGHT = 1000
 
 iiif_manifest = JSON.parse(ARGF.read)
-metadata_prefix = "#{iiif_manifest['label']} #{iiif_manifest['metadata'].select{|m| m['label'] == 'Id'}.first['value']}"
+
+manifest_id = ''
+begin
+ manifest_id = " #{iiif_manifest['metadata'].select{|m| m['label'] == 'Id'}.first['value']}"
+rescue
+end
+
+metadata_prefix = "#{iiif_manifest['label']}#{manifest_id}"
 current_sequence = 0
 iiif_manifest['sequences'].each do |sequence|
   $stderr.puts "Downloading #{sequence['canvases'].length} canvases"
