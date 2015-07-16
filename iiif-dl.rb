@@ -29,8 +29,8 @@ iiif_manifest['sequences'].each do |sequence|
         for x in 0..(x_tiles - 1)
           x_offset = (MAX_TILE_WIDTH + 1) * x
           y_offset = (MAX_TILE_HEIGHT + 1) * y
-          x_width = (x_offset + MAX_TILE_WIDTH) > width ? width % MAX_TILE_WIDTH : MAX_TILE_WIDTH
-          y_width = (y_offset + MAX_TILE_HEIGHT) > height ? height % MAX_TILE_HEIGHT : MAX_TILE_HEIGHT
+          x_width = (x_offset + MAX_TILE_WIDTH) > width ? width - x_offset : MAX_TILE_WIDTH
+          y_width = (y_offset + MAX_TILE_HEIGHT) > height ? height - y_offset : MAX_TILE_HEIGHT
           filename = "#{tile}.jpg"
           filenames << filename
           iiif_tile = "#{x_offset},#{y_offset},#{x_width},#{y_width}"
