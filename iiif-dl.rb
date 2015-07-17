@@ -18,6 +18,7 @@ metadata_prefix = "#{iiif_manifest['label']}#{manifest_id}"
 current_sequence = 0
 iiif_manifest['sequences'].each do |sequence|
   $stderr.puts "Downloading #{sequence['canvases'].length} canvases"
+  current_canvas = 0
   sequence['canvases'].each do |canvas|
     $stderr.puts canvas['label']
     current_image = 0
@@ -28,7 +29,7 @@ iiif_manifest['sequences'].each do |sequence|
       x_tiles = (width / MAX_TILE_WIDTH.to_f).ceil
       y_tiles = (height / MAX_TILE_HEIGHT.to_f).ceil
       $stderr.puts "#{x_tiles} x #{y_tiles} tiles"
-      final_filename = "#{metadata_prefix} #{current_sequence} #{canvas['label']} #{current_image}.jpg".tr(' ','_')
+      final_filename = "#{metadata_prefix} #{current_sequence} #{current_canvas} #{canvas['label']} #{current_image}.jpg".tr(' ','_')
       $stderr.puts "Downloading and assembling #{final_filename}"
       tile = 0
       filenames = []
@@ -51,6 +52,7 @@ iiif_manifest['sequences'].each do |sequence|
       FileUtils.rm(filenames)
       current_image += 1
     end # image loop
+    current_canvas += 1
   end # canvas loop
   current_sequence += 1
 end # sequence loop
