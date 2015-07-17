@@ -15,7 +15,7 @@ begin
 rescue
 end
 
-metadata_prefix = "#{iiif_manifest['label']}#{manifest_id}".tr(' ','_')
+metadata_prefix = "#{iiif_manifest['label']}#{manifest_id}".gsub(/\W/,'_')
 current_sequence = 0
 iiif_manifest['sequences'].each do |sequence|
   $stderr.puts "Downloading #{sequence['canvases'].length} canvases"
@@ -30,7 +30,7 @@ iiif_manifest['sequences'].each do |sequence|
       x_tiles = (width / MAX_TILE_WIDTH.to_f).ceil
       y_tiles = (height / MAX_TILE_HEIGHT.to_f).ceil
       $stderr.puts "#{x_tiles} x #{y_tiles} tiles"
-      final_filename = "#{metadata_prefix} #{current_sequence} #{current_canvas} #{canvas['label']} #{current_image}.jpg".tr(' ','_')
+      final_filename = "#{metadata_prefix} #{current_sequence} #{current_canvas} #{canvas['label']} #{current_image}.jpg".gsub(/\W/,'_')
       $stderr.puts "Downloading and assembling #{final_filename}"
       tile = 0
       tempfiles = []
