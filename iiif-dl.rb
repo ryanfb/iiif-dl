@@ -6,6 +6,7 @@ require 'tempfile'
 
 MAX_TILE_WIDTH = 1000
 MAX_TILE_HEIGHT = 1000
+DEFAULT_SUFFIX = 'default.jpg'
 
 iiif_manifest = JSON.parse(ARGF.read)
 
@@ -45,7 +46,7 @@ iiif_manifest['sequences'].each do |sequence|
             tempfile.close
             tempfiles << tempfile
             iiif_tile = "#{x_offset},#{y_offset},#{x_width},#{y_width}"
-            url = "#{image['resource']['service']['@id']}/#{iiif_tile}/full/0/default.jpg"
+            url = "#{image['resource']['service']['@id']}/#{iiif_tile}/full/0/#{DEFAULT_SUFFIX}"
             $stderr.puts "Downloading tile #{iiif_tile}"
             `wget -q -O #{tempfile.path} #{url}`
             tile += 1
