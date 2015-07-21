@@ -47,9 +47,11 @@ iiif_manifest['sequences'].each do |sequence|
             tempfiles << tempfile
             iiif_tile = "#{x_offset},#{y_offset},#{x_width},#{y_width}"
             quality = image['resource']['service']['@context'] =~ /iiif.io\/api\/image\/2/ ? 'default' : 'native'
-            url = "#{image['resource']['service']['@id']}/#{iiif_tile}/full/0/#{quality}.#{DEFAULT_EXTENSION}"
+            url = "#{image['resource']['service']['@id'].chomp('/')}/#{iiif_tile}/full/0/#{quality}.#{DEFAULT_EXTENSION}"
             $stderr.puts "Downloading tile #{iiif_tile}"
-            `wget -q -O #{tempfile.path} #{url}`
+            while !system("wget -q -O #{tempfile.path} #{url}") do
+              $stderr.puts "Retrying download for: #{url}"
+            end
             tile += 1
           end
         end
