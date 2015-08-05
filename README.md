@@ -4,6 +4,8 @@ Command-line tile downloader/assembler for IIIF endpoints/manifests.
 
 Download full-resolution image sequences from any IIIF server.
 
+See also: [dzi-dl](https://github.com/ryanfb/dzi-dl/)
+
 ## Requirements
 
  * `wget`
