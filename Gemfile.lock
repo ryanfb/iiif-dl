@@ -1,12 +1,14 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    open_uri_redirections (0.2.1)
     robotex (1.0.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  open_uri_redirections
   robotex
 
 BUNDLED WITH
