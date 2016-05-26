@@ -11,10 +11,12 @@ See also: [dzi-dl](https://github.com/ryanfb/dzi-dl/)
  * `wget`
  * [ImageMagick](http://www.imagemagick.org/)
  * Ruby
+ * [Bundler](http://bundler.io/)
  
 ## Usage
 
-    ./iiif-dl.rb iiif-manifest.json
+    bundle install
+    bundle exec ./iiif-dl.rb iiif-manifest.json
 
 You can download an IIIF manifest from e.g. the [Digital Bodleian](http://digital.bodleian.ox.ac.uk/):
 

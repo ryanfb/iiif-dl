@@ -3,11 +3,16 @@
 require 'json'
 require 'fileutils'
 require 'tempfile'
+require 'robotex'
+require 'uri'
 
 MAX_TILE_WIDTH = 1000
 MAX_TILE_HEIGHT = 1000
 DEFAULT_EXTENSION = 'jpg'
+USER_AGENT = 'iiif-dl'
+DEFAULT_DELAY = 1
 
+robotex = Robotex.new(USER_AGENT)
 iiif_manifest = JSON.parse(ARGF.read)
 
 manifest_id = ''
@@ -42,19 +47,29 @@ iiif_manifest['sequences'].each do |sequence|
             y_offset = MAX_TILE_HEIGHT * y
             x_width = (x_offset + MAX_TILE_WIDTH) > width ? width - x_offset : MAX_TILE_WIDTH
             y_width = (y_offset + MAX_TILE_HEIGHT) > height ? height - y_offset : MAX_TILE_HEIGHT
-            tempfile = Tempfile.new(["#{metadata_prefix}_#{tile}_",'.jpg'])
-            tempfile.close
-            tempfiles << tempfile
             iiif_tile = "#{x_offset},#{y_offset},#{x_width},#{y_width}"
             quality = image['resource']['service']['@context'] =~ /iiif.io\/api\/image\/2/ ? 'default' : 'native'
-            url = "#{image['resource']['service']['@id'].chomp('/')}/#{iiif_tile}/full/0/#{quality}.#{DEFAULT_EXTENSION}"
-            $stderr.puts "Downloading tile #{iiif_tile}"
-            while !system("wget -q -O #{tempfile.path} #{url}") do
-              $stderr.puts "Retrying download for: #{url}"
-            end
-            tile += 1
-          end
-        end
+            url = URI.escape("#{image['resource']['service']['@id'].chomp('/')}/#{iiif_tile}/full/0/#{quality}.#{DEFAULT_EXTENSION}")
+            if robotex.allowed?(url)
+              $stderr.puts "Downloading tile #{iiif_tile}"
+              tempfile = Tempfile.new(["#{metadata_prefix}_#{tile}_",'.jpg'])
+              tempfile.close
+              tempfiles << tempfile
+              while !system("wget -U \"#{USER_AGENT}\" -q -O #{tempfile.path} #{url}") do
+                $stderr.puts "Retrying download for: #{url}"
+                delay = robotex.delay(url)
+                sleep (delay ? delay : DEFAULT_DELAY)
+              end
+              tile += 1
+              delay = robotex.delay(url)
+              sleep (delay ? delay : DEFAULT_DELAY)
+            else
+              $stderr.puts "User agent \"#{USER_AGENT}\" not allowed by `robots.txt` for #{url}, aborting"
+              exit 1
+            end # allowed?
+          end # x
+        end # y
+        # assemble the tiles
         `montage -mode concatenate -tile #{x_tiles}x#{y_tiles} #{tempfiles.map{|t| t.path}.join(' ')} #{final_filename}`
       ensure
         tempfiles.each{|t| t.unlink}
