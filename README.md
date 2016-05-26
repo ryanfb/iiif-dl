@@ -21,3 +21,7 @@ See also: [dzi-dl](https://github.com/ryanfb/dzi-dl/)
 You can download an IIIF manifest from e.g. the [Digital Bodleian](http://digital.bodleian.ox.ac.uk/):
 
 ![Digital Bodleian IIIF manifest download](http://i.imgur.com/WQLemyw.png)
+
+Alternately, if you have [PhantomJS](http://phantomjs.org/) installed, you can use `jsonreqs.js` to list all URLs ending in `.json` requested by a given webpage URL:
+
+    phantomjs jsonreqs.js 'http://example.com/viewer.asp?manuscript=shelfmark'
