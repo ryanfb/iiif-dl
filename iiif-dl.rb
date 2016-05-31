@@ -82,16 +82,15 @@ iiif_manifest['sequences'].each do |sequence|
             url = URI.escape("#{identifier}/#{iiif_tile}/full/0/#{quality}.#{DEFAULT_EXTENSION}")
             if robotex.allowed?(url)
               $stderr.puts "Downloading tile #{iiif_tile}"
+              delay = robotex.delay(url)
               tempfile = Tempfile.new(["#{metadata_prefix}_#{tile}_",'.jpg'])
               tempfile.close
               tempfiles << tempfile
               while !system("wget -U \"#{USER_AGENT}\" -q -O #{tempfile.path} #{url}") do
                 $stderr.puts "Retrying download for: #{url}"
-                delay = robotex.delay(url)
                 sleep (delay ? delay : DEFAULT_DELAY)
               end
               tile += 1
-              delay = robotex.delay(url)
               sleep (delay ? delay : DEFAULT_DELAY)
             else
               $stderr.puts "User agent \"#{USER_AGENT}\" not allowed by `robots.txt` for #{url}, aborting"
