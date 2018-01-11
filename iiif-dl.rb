@@ -8,8 +8,8 @@ require 'uri'
 require 'open-uri'
 require 'open_uri_redirections'
 
-DEFAULT_TILE_WIDTH = 1000
-DEFAULT_TILE_HEIGHT = 1000
+DEFAULT_TILE_WIDTH = 1024
+DEFAULT_TILE_HEIGHT = 1024
 DEFAULT_EXTENSION = 'jpg'
 USER_AGENT = 'iiif-dl'
 DEFAULT_DELAY = 1
@@ -35,12 +35,15 @@ iiif_manifest['sequences'].each do |sequence|
       $stderr.puts "#{image['resource']['width']} x #{image['resource']['height']}"
       width = image['resource']['width'].to_i
       height = image['resource']['height'].to_i
-      identifier = image['resource']['service']['@id'].chomp('/')
+      identifier = URI.unescape(image['resource']['service']['@id'].chomp('/'))
+      $stderr.puts "Got identifier: #{identifier}"
+      $stderr.puts "From: #{image['resource']['service']['@id']}"
       max_tile_width = DEFAULT_TILE_WIDTH
       max_tile_height = DEFAULT_TILE_HEIGHT
       
       begin
         info_json_url = URI.escape("#{identifier}/info.json")
+        $stderr.puts "Checking info.json URL: #{info_json_url}"
         if robotex.allowed?(info_json_url)
           info_json = JSON.parse(open(info_json_url, "User-Agent" => USER_AGENT, :allow_redirections => :all).read)
           if info_json['tiles'] # IIIF 2.0
