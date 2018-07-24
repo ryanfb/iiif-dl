@@ -17,10 +17,14 @@ See also: [dzi-dl](https://github.com/ryanfb/dzi-dl/)
 
     bundle install
     bundle exec ./iiif-dl.rb --help
+    
     Usage: iiif-dl.rb [options] [iiif-manifest.json]
         -f, --force-tiling               Don't attempt full-size downloads without tiling
         -i, --identifier IDENTIFIER      Download single IIIF identifier IDENTIFIER instead of image sequence from manifest JSON
         -h, --help                       Display this screen
+    
+    bundle exec ./iiif-dl.rb iiif-manifest.json
+    bundle exec ./iiif-dl.rb -i http://example.com/iiif/IIIF_SHELFMARK_0001
 
 You can download an IIIF manifest from e.g. the [Digital Bodleian](http://digital.bodleian.ox.ac.uk/):
 
