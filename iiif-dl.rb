@@ -44,12 +44,12 @@ def download_identifier(identifier, force_tiling = false, final_filename = nil, 
         if info_json['tile_height']
           max_tile_height = info_json['tile_height']
         end
-        if info_json['width']
-          width = info_json['width']
-        end
-        if info_json['height']
-          height = info_json['height']
-        end
+      end
+      if info_json['width']
+        width = info_json['width']
+      end
+      if info_json['height']
+        height = info_json['height']
       end
     else
       $stderr.puts "Forbidden from accessing URL: #{info_json_url}"
