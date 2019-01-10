@@ -9,6 +9,7 @@ require 'open-uri'
 require 'open_uri_redirections'
 require 'dimensions'
 require 'optparse'
+require 'net/https'
 
 DEFAULT_TILE_WIDTH = 1024
 DEFAULT_TILE_HEIGHT = 1024
@@ -24,10 +25,10 @@ def download_identifier(identifier, force_tiling = false, final_filename = nil, 
   v2 = nil
   
   begin
-    info_json_url = URI.escape("#{identifier}/info.json")
+    info_json_url = URI.encode(URI.escape("#{identifier}/info.json"),'[]')
     $stderr.puts "Checking info.json URL: #{info_json_url}"
     if ROBOTEX.allowed?(info_json_url)
-      info_json = JSON.parse(open(info_json_url, "User-Agent" => USER_AGENT, :allow_redirections => :all).read)
+      info_json = JSON.parse(open(info_json_url, "User-Agent" => USER_AGENT, :allow_redirections => :all, :ssl_verify_mode => OpenSSL::SSL::VERIFY_NONE).read)
       if info_json['tiles'] # IIIF 2.0
         v2 = true
         max_tile_width = info_json['tiles'][0]['width']
