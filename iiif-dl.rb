@@ -11,11 +11,11 @@ require 'dimensions'
 require 'optparse'
 require 'net/https'
 
-DEFAULT_TILE_WIDTH = 1024
-DEFAULT_TILE_HEIGHT = 1024
-DEFAULT_EXTENSION = 'jpg'
-USER_AGENT = 'iiif-dl'
-DEFAULT_DELAY = 1
+DEFAULT_TILE_WIDTH = ENV['DEFAULT_TILE_WIDTH'] || 1024
+DEFAULT_TILE_HEIGHT = ENV['DEFAULT_TILE_HEIGHT'] || 1024
+DEFAULT_EXTENSION = ENV['DEFAULT_EXTENSION'] || 'jpg'
+USER_AGENT = ENV['USER_AGENT'] || 'iiif-dl'
+DEFAULT_DELAY = ENV['DEFAULT_DELAY'] || 1
 ROBOTEX = Robotex.new(USER_AGENT)
 
 def download_identifier(identifier, force_tiling = false, final_filename = nil, width = nil, height = nil)
