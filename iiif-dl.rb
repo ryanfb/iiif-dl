@@ -62,8 +62,8 @@ def download_identifier(identifier, force_tiling = false, final_filename = nil, 
 
   quality = v2 ? 'default' : 'native'
   unless force_tiling
-    [ URI.escape("#{identifier}/0,0,#{width},#{height}/full/0/#{quality}.#{DEFAULT_EXTENSION}"),
-      URI.escape("#{identifier}/full/full/0/#{quality}.#{DEFAULT_EXTENSION}") ].each do |url|
+    [ URI.encode(URI.escape("#{identifier}/0,0,#{width},#{height}/full/0/#{quality}.#{DEFAULT_EXTENSION}"),'[]'),
+      URI.encode(URI.escape("#{identifier}/full/full/0/#{quality}.#{DEFAULT_EXTENSION}"),'[]') ].each do |url|
       $stderr.puts "Attempting full-size download without stitching: #{url}"
       if ROBOTEX.allowed?(url)
         if system("wget --header='Referer: #{identifier}' -U \"#{USER_AGENT}\" -q -O #{final_filename}.jpg #{url}")
@@ -94,7 +94,7 @@ def download_identifier(identifier, force_tiling = false, final_filename = nil, 
         x_width = (x_offset + max_tile_width) > width ? width - x_offset : max_tile_width
         y_width = (y_offset + max_tile_height) > height ? height - y_offset : max_tile_height
         iiif_tile = "#{x_offset},#{y_offset},#{x_width},#{y_width}"
-        url = URI.escape("#{identifier}/#{iiif_tile}/full/0/#{quality}.#{DEFAULT_EXTENSION}")
+        url = URI.encode(URI.escape("#{identifier}/#{iiif_tile}/full/0/#{quality}.#{DEFAULT_EXTENSION}"),'[]')
         if ROBOTEX.allowed?(url)
           $stderr.puts "Downloading tile #{iiif_tile}"
           delay = ROBOTEX.delay(url)
