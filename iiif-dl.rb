@@ -18,6 +18,10 @@ USER_AGENT = ENV['USER_AGENT'] || 'iiif-dl'
 DEFAULT_DELAY = ENV['DEFAULT_DELAY'] || 1
 ROBOTEX = Robotex.new(USER_AGENT)
 
+def escape_url(url)
+  URI.encode(URI.escape(url),'[]')
+end
+
 def download_identifier(identifier, force_tiling = false, final_filename = nil, width = nil, height = nil)
   final_filename ||= identifier.split('/').last
   max_tile_width = DEFAULT_TILE_WIDTH
@@ -25,7 +29,7 @@ def download_identifier(identifier, force_tiling = false, final_filename = nil, 
   v2 = nil
   
   begin
-    info_json_url = URI.encode(URI.escape("#{identifier}/info.json"),'[]')
+    info_json_url = escape_url("#{identifier}/info.json")
     $stderr.puts "Checking info.json URL: #{info_json_url}"
     if ROBOTEX.allowed?(info_json_url)
       info_json = JSON.parse(open(info_json_url, "User-Agent" => USER_AGENT, :allow_redirections => :all, :ssl_verify_mode => OpenSSL::SSL::VERIFY_NONE).read)
@@ -62,8 +66,8 @@ def download_identifier(identifier, force_tiling = false, final_filename = nil, 
 
   quality = v2 ? 'default' : 'native'
   unless force_tiling
-    [ URI.encode(URI.escape("#{identifier}/0,0,#{width},#{height}/full/0/#{quality}.#{DEFAULT_EXTENSION}"),'[]'),
-      URI.encode(URI.escape("#{identifier}/full/full/0/#{quality}.#{DEFAULT_EXTENSION}"),'[]') ].each do |url|
+    [ escape_url("#{identifier}/0,0,#{width},#{height}/full/0/#{quality}.#{DEFAULT_EXTENSION}"),
+      escape_url("#{identifier}/full/full/0/#{quality}.#{DEFAULT_EXTENSION}") ].each do |url|
       $stderr.puts "Attempting full-size download without stitching: #{url}"
       if ROBOTEX.allowed?(url)
         if system("wget --header='Referer: #{identifier}' -U \"#{USER_AGENT}\" -q -O #{final_filename}.jpg #{url}")
@@ -94,7 +98,7 @@ def download_identifier(identifier, force_tiling = false, final_filename = nil, 
         x_width = (x_offset + max_tile_width) > width ? width - x_offset : max_tile_width
         y_width = (y_offset + max_tile_height) > height ? height - y_offset : max_tile_height
         iiif_tile = "#{x_offset},#{y_offset},#{x_width},#{y_width}"
-        url = URI.encode(URI.escape("#{identifier}/#{iiif_tile}/full/0/#{quality}.#{DEFAULT_EXTENSION}"),'[]')
+        url = escape_url("#{identifier}/#{iiif_tile}/full/0/#{quality}.#{DEFAULT_EXTENSION}")
         if ROBOTEX.allowed?(url)
           $stderr.puts "Downloading tile #{iiif_tile}"
           delay = ROBOTEX.delay(url)
