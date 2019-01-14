@@ -132,9 +132,9 @@ def download_identifier(identifier, force_tiling = false, final_filename = nil, 
             end
           rescue StandardError => e
             log_output e.inspect, tile_progress
-            log_output "Retrying download for: #{url}", tile_progress
-            sleep (delay ? delay : DEFAULT_DELAY)
             if retries < MAX_RETRIES
+              log_output "Retrying download for: #{url}", tile_progress
+              sleep (delay ? delay : DEFAULT_DELAY)
               retries += 1
               retry
             else
