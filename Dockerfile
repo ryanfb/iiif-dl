@@ -1,6 +1,6 @@
 FROM ruby:2.3
 
-RUN apt-get update && apt-get install -y wget imagemagick
+RUN apt-get update && apt-get install -y imagemagick
 
 WORKDIR /usr/src/app
 

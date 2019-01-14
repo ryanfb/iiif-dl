@@ -4,6 +4,7 @@ GEM
     dimensions (1.3.0)
     open_uri_redirections (0.2.1)
     robotex (1.0.0)
+    ruby-progressbar (1.10.0)
 
 PLATFORMS
   ruby
@@ -12,6 +13,7 @@ DEPENDENCIES
   dimensions
   open_uri_redirections
   robotex
+  ruby-progressbar
 
 BUNDLED WITH
    1.16.1

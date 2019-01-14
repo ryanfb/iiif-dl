@@ -8,10 +8,9 @@ See also: [dzi-dl](https://github.com/ryanfb/dzi-dl/)
 
 ## Requirements
 
- * `wget`
- * [ImageMagick](http://www.imagemagick.org/)
  * Ruby
  * [Bundler](http://bundler.io/)
+ * [ImageMagick](http://www.imagemagick.org/)
  
 ## Usage
 
@@ -40,4 +39,4 @@ In single-identifier mode, you pass the URL of an IIIF identifier, i.e. what `/i
 
 There's also [an automated build for this repository on Docker Hub at `ryanfb/iiif-dl`](http://hub.docker.com/r/ryanfb/iiif-dl). It defines an `ENTRYPOINT` which will start `iiif-dl.rb` and pass any other arguments or environment variables to it, as well as defining a `/data` volume which you can map to your host to store manifests and images. For example, if you were in a directory with a IIIF manifest named `manifest.json`, you could download it with:
 
-    docker run -v $(pwd):/data ryanfb/iiif-dl manifest.json
+    docker run -t -v $(pwd):/data ryanfb/iiif-dl manifest.json
