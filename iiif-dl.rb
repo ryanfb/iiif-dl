@@ -11,6 +11,7 @@ require 'dimensions'
 require 'optparse'
 require 'net/https'
 require 'ruby-progressbar'
+require 'open3'
 
 DEFAULT_TILE_WIDTH = ENV['DEFAULT_TILE_WIDTH'].nil? ? 1024 : ENV['DEFAULT_TILE_WIDTH'].to_i
 DEFAULT_TILE_HEIGHT = ENV['DEFAULT_TILE_HEIGHT'].nil? ? 1024 : ENV['DEFAULT_TILE_HEIGHT'].to_i
@@ -152,7 +153,10 @@ def download_identifier(identifier, force_tiling = false, final_filename = nil, 
       end # x
     end # y
     # assemble the tiles
-    `montage -mode concatenate -tile #{x_tiles}x#{y_tiles} #{tempfiles.map{|t| t.path}.join(' ')} #{final_filename}.jpg`
+    # `montage -mode concatenate -tile #{x_tiles}x#{y_tiles} #{tempfiles.map{|t| t.path}.join(' ')} #{final_filename}.jpg`
+    tempfile_paths = tempfiles.map{|t| t.path}
+    montage_stdout, montage_status = Open3.capture2('montage','-mode','concatenate','-tile',"#{x_tiles}x#{y_tiles}",*tempfile_paths,"#{final_filename}.jpg")
+    raise "Error running montage command!" unless montage_status.success?
     if File.exist?("#{final_filename}.jpg")
       log_output "Assembled image from tiles: #{final_filename}.jpg"
       if !((Dimensions.width("#{final_filename}.jpg") == width) && (Dimensions.height("#{final_filename}.jpg") == height))
