@@ -12,6 +12,7 @@ require 'optparse'
 require 'net/https'
 require 'ruby-progressbar'
 require 'open3'
+require 'addressable/uri'
 
 DEFAULT_TILE_WIDTH = ENV['DEFAULT_TILE_WIDTH'].nil? ? 1024 : ENV['DEFAULT_TILE_WIDTH'].to_i
 DEFAULT_TILE_HEIGHT = ENV['DEFAULT_TILE_HEIGHT'].nil? ? 1024 : ENV['DEFAULT_TILE_HEIGHT'].to_i
@@ -24,7 +25,7 @@ ROBOTEX = Robotex.new(USER_AGENT)
 OPEN_URI_OPTIONS = {"User-Agent" => USER_AGENT, :allow_redirections => :all, :ssl_verify_mode => VERIFY_SSL}
 
 def escape_url(url)
-  URI.encode(URI.escape(url),'[]')
+  Addressable::URI.parse(url).normalize.to_s
 end
 
 def log_output(output_string, progress_bar = nil)
@@ -45,7 +46,7 @@ def download_identifier(identifier, force_tiling = false, final_filename = nil, 
     info_json_url = escape_url("#{identifier}/info.json")
     log_output "Checking info.json URL: #{info_json_url}", progress_bar
     if ROBOTEX.allowed?(info_json_url)
-      info_json = JSON.parse(open(info_json_url, OPEN_URI_OPTIONS).read)
+      info_json = JSON.parse(URI.open(info_json_url, OPEN_URI_OPTIONS).read)
       if info_json['tiles'] # IIIF 2.0
         v2 = true
         max_tile_width = info_json['tiles'][0]['width']
@@ -84,7 +85,7 @@ def download_identifier(identifier, force_tiling = false, final_filename = nil, 
       log_output "Attempting full-size download without stitching: #{url}", progress_bar
       if ROBOTEX.allowed?(url)
         begin
-          IO.copy_stream(open(url, OPEN_URI_OPTIONS.merge({"Referer" => identifier})), "#{final_filename}.jpg")
+          IO.copy_stream(URI.open(url, OPEN_URI_OPTIONS.merge({"Referer" => identifier})), "#{final_filename}.jpg")
           if File.exist?("#{final_filename}.jpg")
             log_output "Download succeeded, checking image dimensions...", progress_bar
             if (Dimensions.width("#{final_filename}.jpg") == width) && (Dimensions.height("#{final_filename}.jpg") == height)
@@ -127,7 +128,7 @@ def download_identifier(identifier, force_tiling = false, final_filename = nil, 
           tempfile.close
           tempfiles << tempfile
           begin
-            IO.copy_stream(open(url, OPEN_URI_OPTIONS.merge({"Referer" => identifier})), tempfile.path)
+            IO.copy_stream(URI.open(url, OPEN_URI_OPTIONS.merge({"Referer" => identifier})), tempfile.path)
             unless File.exist?(tempfile.path)
               raise("File not downloaded")
             end
@@ -215,7 +216,7 @@ if File.basename(__FILE__) == File.basename($PROGRAM_NAME)
           log_output "Image Dimensions: #{image['resource']['width']} x #{image['resource']['height']}", canvas_progress
           width = image['resource']['width'].to_i
           height = image['resource']['height'].to_i
-          identifier = URI.unescape(image['resource']['service']['@id'].chomp('/'))
+          identifier = Addressable::URI.unescape(image['resource']['service']['@id'].chomp('/')).to_s
           log_output "Got identifier: #{identifier}", canvas_progress
           log_output "From: #{image['resource']['service']['@id']}", canvas_progress
           final_filename = "#{metadata_prefix} #{current_sequence} #{current_canvas} #{canvas['label']} #{current_image}".gsub(/[^-.a-zA-Z0-9_]/,'_')
