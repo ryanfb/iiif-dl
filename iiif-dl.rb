@@ -25,7 +25,7 @@ ROBOTEX = Robotex.new(USER_AGENT)
 OPEN_URI_OPTIONS = {"User-Agent" => USER_AGENT, :allow_redirections => :all, :ssl_verify_mode => VERIFY_SSL}
 
 def escape_url(url)
-  Addressable::URI.parse(url).normalize.to_s
+  Addressable::URI.normalized_encode(url)
 end
 
 def log_output(output_string, progress_bar = nil)
@@ -216,7 +216,7 @@ if File.basename(__FILE__) == File.basename($PROGRAM_NAME)
           log_output "Image Dimensions: #{image['resource']['width']} x #{image['resource']['height']}", canvas_progress
           width = image['resource']['width'].to_i
           height = image['resource']['height'].to_i
-          identifier = Addressable::URI.unescape(image['resource']['service']['@id'].chomp('/')).to_s
+          identifier = Addressable::URI.unescape(image['resource']['service']['@id'].chomp('/'))
           log_output "Got identifier: #{identifier}", canvas_progress
           log_output "From: #{image['resource']['service']['@id']}", canvas_progress
           final_filename = "#{metadata_prefix} #{current_sequence} #{current_canvas} #{canvas['label']} #{current_image}".gsub(/[^-.a-zA-Z0-9_]/,'_')
