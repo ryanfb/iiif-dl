@@ -41,7 +41,7 @@ def download_identifier(identifier, force_tiling = false, final_filename = nil, 
   max_tile_width = DEFAULT_TILE_WIDTH
   max_tile_height = DEFAULT_TILE_HEIGHT
   v2 = nil
-  
+
   begin
     info_json_url = escape_url("#{identifier}/info.json")
     log_output "Checking info.json URL: #{info_json_url}", progress_bar
