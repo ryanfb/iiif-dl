@@ -1,5 +1,7 @@
 # iiif-dl
 
+[![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/ryanfb/iiif-dl)](https://hub.docker.com/r/ryanfb/iiif-dl/)
+
 Command-line tile downloader/assembler for IIIF endpoints/manifests.
 
 Download full-resolution image sequences from any IIIF server.
