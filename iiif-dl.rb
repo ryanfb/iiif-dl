@@ -231,7 +231,7 @@ if File.basename(__FILE__) == File.basename($PROGRAM_NAME)
         current_sequence += 1
       end # sequence loop
     else
-      $stderr.puts "No sequences defined in manifest JSON. JSON may not be a valid IIIF Presentation manifest."
+      $stderr.puts "ERROR: No sequences defined in manifest JSON. JSON may not be a valid IIIF Presentation manifest."
       exit 1
     end
   end
