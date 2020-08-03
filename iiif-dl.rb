@@ -205,29 +205,34 @@ if File.basename(__FILE__) == File.basename($PROGRAM_NAME)
 
     metadata_prefix = "#{iiif_manifest['label']}#{manifest_id}".gsub(/[^-.a-zA-Z0-9_]/,'_')
     current_sequence = 0
-    iiif_manifest['sequences'].each do |sequence|
-      $stderr.puts "Downloading #{sequence['canvases'].length} canvases"
-      canvas_progress = ProgressBar.create(:title => "Downloading Canvases", :total => sequence['canvases'].length, :format => '%t (%c/%C): |%B| %p%% %E')
-      current_canvas = 0
-      sequence['canvases'].each do |canvas|
-        log_output "Canvas Label: #{canvas['label']}", canvas_progress
-        current_image = 0
-        canvas['images'].each do |image|
-          log_output "Image Dimensions: #{image['resource']['width']} x #{image['resource']['height']}", canvas_progress
-          width = image['resource']['width'].to_i
-          height = image['resource']['height'].to_i
-          identifier = Addressable::URI.unescape(image['resource']['service']['@id'].chomp('/'))
-          log_output "Got identifier: #{identifier}", canvas_progress
-          log_output "From: #{image['resource']['service']['@id']}", canvas_progress
-          final_filename = "#{metadata_prefix} #{current_sequence} #{current_canvas} #{canvas['label']} #{current_image}".gsub(/[^-.a-zA-Z0-9_]/,'_')
-          v2 = image['resource']['service']['@context'] =~ /iiif.io\/api\/image\/2/
-          download_identifier(identifier, options[:force_tiling], final_filename, width, height, canvas_progress)
-          current_image += 1
-        end # image loop
-        current_canvas += 1
-        canvas_progress.increment
-      end # canvas loop
-      current_sequence += 1
-    end # sequence loop
+    if iiif_manifest.has_key?('sequences') && iiif_manifest['sequences'].is_a?(Array) && iiif_manifest['sequences'].any?
+      iiif_manifest['sequences'].each do |sequence|
+        $stderr.puts "Downloading #{sequence['canvases'].length} canvases"
+        canvas_progress = ProgressBar.create(:title => "Downloading Canvases", :total => sequence['canvases'].length, :format => '%t (%c/%C): |%B| %p%% %E')
+        current_canvas = 0
+        sequence['canvases'].each do |canvas|
+          log_output "Canvas Label: #{canvas['label']}", canvas_progress
+          current_image = 0
+          canvas['images'].each do |image|
+            log_output "Image Dimensions: #{image['resource']['width']} x #{image['resource']['height']}", canvas_progress
+            width = image['resource']['width'].to_i
+            height = image['resource']['height'].to_i
+            identifier = Addressable::URI.unescape(image['resource']['service']['@id'].chomp('/'))
+            log_output "Got identifier: #{identifier}", canvas_progress
+            log_output "From: #{image['resource']['service']['@id']}", canvas_progress
+            final_filename = "#{metadata_prefix} #{current_sequence} #{current_canvas} #{canvas['label']} #{current_image}".gsub(/[^-.a-zA-Z0-9_]/,'_')
+            v2 = image['resource']['service']['@context'] =~ /iiif.io\/api\/image\/2/
+            download_identifier(identifier, options[:force_tiling], final_filename, width, height, canvas_progress)
+            current_image += 1
+          end # image loop
+          current_canvas += 1
+          canvas_progress.increment
+        end # canvas loop
+        current_sequence += 1
+      end # sequence loop
+    else
+      $stderr.puts "No sequences defined in manifest JSON. JSON may not be a valid IIIF Presentation manifest."
+      exit 1
+    end
   end
 end
